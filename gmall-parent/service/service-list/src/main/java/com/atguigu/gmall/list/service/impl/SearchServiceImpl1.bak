@@ -1,0 +1,81 @@
+package com.atguigu.gmall.list.service.impl;
+
+import com.atguigu.gmall.list.service.SearchService;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.IOException;
+import java.util.Map;
+
+/**
+ * @ClassName SearchServiceImpl
+ * @Description
+ * @Author yzchao
+ * @Date 2022/11/4 12:38
+ * @Version V1.0
+ */
+public class SearchServiceImpl implements SearchService {
+
+    @Autowired
+    private RestHighLevelClient restHighLevelClient;
+
+    /**
+     * @param search
+     * @return java.util.List<com.atguigu.gmall.model.list.Goods>
+     * @Description 首页商品商品输入框搜索
+     * @Date 14:11 2022/11/3
+     * @Param [search]
+     */
+
+    @Override
+    public Map<String, Object> searchGoods(Map<String, String> searchData) {
+
+        try {
+            //获取参数 拼接条件
+            SearchRequest searchRequest = buildSearchParam(searchData);
+            //执行查询
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            //返回结果解析
+            return getSearchResult(searchResponse);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    //获取参数 拼接条件
+    private SearchRequest buildSearchParam(Map<String, String> searchData) {
+        //关键词查询
+        
+        
+        
+        
+        
+        //三级分类查询
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        return null;
+    }
+
+
+
+
+
+    //返回结果解析
+    private Map<String, Object> getSearchResult(SearchResponse searchResponse) {
+    }
+
+
+}

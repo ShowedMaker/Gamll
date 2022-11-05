@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+测试页面的内容
+
+<p th:text="${username}"></p>
+<p th:utext="${password}"></p>
+
+<table>
+    <tr th:each="user,index:${arrayList}">
+        <td th:text="${index.count}"> </td>
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.address}"></td>
+        <td th:text="${user.age}"></td>
+    </tr>
+</table>
+
+<p th:text="${#dates.format(date,'yyyy-MM-dd HH:mm:ss')}"></p>
+<div th:if="${age} > 18">是成年人</div>
+<div th:if="${age} < 18">是未成年人</div>
+
+<div th:unless="${age} > 18">是未成年人</div>
+<div th:unless="${age} < 18">是成年人</div>
+
+<span th:each="abc:${map}">
+   map的key是： <span th:text="${abc.key}"></span>
+     map的value是： <span th:text="${abc.value}"></span>
+</span>
+
+
+    <div th:if="${#maps.containsKey(map,'dd')}">包含</div>
+<div th:unless="${#maps.containsKey(map,'dd')}">不包含</div>
+
+
+<p th:text="${#strings.replace(username,'平均分','最高峰')}"></p>
+<p th:text="${#strings.substring(username,0,3)}"></p>
+<p th:text="${#strings.arraySplit(username,'手机')[0]}"></p>
+
+<img th:src="${img}" alt="图片消失">
+
+<a th:href="@{${url}(username='张三',password='123456')}">点我跳转</a>
+
+<div th:each="i:${#numbers.sequence(10,1,-1)}">
+    <p th:text="${i}"></p>
+</div>
+
+</body>
+</html>
