@@ -7,10 +7,14 @@
         <option value="$PROJECT_DIR$/gmall-parent/pom.xml" />
         <option value="$PROJECT_DIR$/thymeleaf-demo/pom.xml" />
         <option value="$PROJECT_DIR$/elasticsearch-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/gmall-parent/service/service-auth/pom.xml" />
+        <option value="$PROJECT_DIR$/gmall-parent/service/service-cart/pom.xml" />
+        <option value="$PROJECT_DIR$/rabbitmq-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/rabbitmq-demo1/pom.xml" />
       </list>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8 (3)" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

@@ -2,8 +2,8 @@ package com.atguigu.gmall.web.controller;
 
 import com.atguigu.gmall.list.SearchFeignClient;
 import com.atguigu.gmall.web.util.Page;
-import org.apache.http.conn.util.PublicSuffixList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +23,9 @@ import java.util.Map;
 @RequestMapping("/api/search")
 public class SearchController {
 
+    //商品详情的url
+    @Value("${item.url}")
+    private String itemUrl;
 
     @Autowired
     private SearchFeignClient searchFeignClient;
@@ -46,13 +49,13 @@ public class SearchController {
         long totalHits = Long.parseLong(result.get("totalHits").toString());
 
         //每页显示条数
-        int size = 60;
+        int size = 50;
 
         //分页对象初始化
         Page<Object> pageInfo = new Page<>(totalHits, pageNum, size);
         model.addAttribute("pageInfo",pageInfo);
 
-
+        model.addAttribute("itemUrl",itemUrl);
         //返回页面
         return "list";
     }
@@ -64,8 +67,13 @@ public class SearchController {
 
         searchData.entrySet().stream().forEach(entry->{
             String key = entry.getKey();
-            String value = (String) entry.getValue();
-            sb.append(key).append("=").append(value).append("&");
+
+    //排序保留 分页不保留
+            if(!key.equals("pageNum")){
+
+                String value = (String) entry.getValue();
+                sb.append(key).append("=").append(value).append("&");
+            }
         });
 
         return sb.toString().substring(0, sb.toString().length() - 1);
@@ -79,7 +87,8 @@ public class SearchController {
 
         searchData.entrySet().stream().forEach(entry->{
             String key = entry.getKey();
-            if(!key.equals("sortFiled") && !key.equals("sortRule")){
+            //排序 也不保留分页
+            if(!key.equals("sortFiled") && !key.equals("sortRule") && !key.equals("pageNum")){
                 String value = (String) entry.getValue();
                 sb.append(key).append("=").append(value).append("&");
             }
@@ -95,7 +104,7 @@ public class SearchController {
         try {
             //可以发生异常 如果用户输入非数字页码
             int i = Integer.parseInt(pageNum);
-            if( i <= 0 ){
+            if( i <= 0 || i > 200){
                 return 1;
             }else{
                 return i;

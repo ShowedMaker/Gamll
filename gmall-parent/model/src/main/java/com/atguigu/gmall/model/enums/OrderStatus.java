@@ -2,6 +2,8 @@ package com.atguigu.gmall.model.enums;
 
 public enum OrderStatus {
     UNPAID("未支付"),
+    TIME_OUT("超时取消订单"),
+    CANCEL("主动取消订单"),
     PAID("已支付" ),
     WAITING_DELEVER("待发货"),
     DELEVERED("已发货"),

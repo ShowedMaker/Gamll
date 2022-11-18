@@ -10,11 +10,14 @@ import com.atguigu.gmall.model.product.BaseTrademark;
 import com.atguigu.gmall.model.product.SkuInfo;
 import com.atguigu.gmall.product.feign.ProductFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -99,5 +102,45 @@ public class GoodsServiceImpl implements GoodsService {
     public void goodsRemoveFromEs(Long goodsId) {
         //将商品从es中删除掉
         goodsDao.deleteById(goodsId);
+    }
+
+
+    @Resource
+    private RedisTemplate redisTemplate;
+
+    /**
+     * @param goodsId
+     * @return void
+     * @Description 热度值
+     * @Date 21:59 2022/11/5
+     * @Param [goodsId]
+     */
+    @Override
+    public void addHotScore(Long goodsId) {
+
+//        Long increment =
+//                redisTemplate.opsForValue().increment("Goods_Hot_Score_" + goodsId, 1);
+
+
+        //参数校验
+        if(goodsId == null){return;}
+
+        //查商品
+        Optional<Goods> optionalGoods = goodsDao.findById(goodsId);
+        if (optionalGoods.isPresent()) {
+            //使用zset进行热度值增加
+            Double hotScore = redisTemplate.opsForZSet().incrementScore("Goods_Hot_Score_",
+                    goodsId+"", 1);
+
+        //每200更新一次
+        if(hotScore.intValue()  % 200 == 0) {
+            Goods goods = optionalGoods.get();
+            goods.setHotScore(hotScore.longValue());
+
+            //保存
+            goodsDao.save(goods);
+        }
+   }
+
     }
 }

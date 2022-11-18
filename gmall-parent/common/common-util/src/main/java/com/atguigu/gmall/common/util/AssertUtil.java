@@ -36,7 +36,7 @@ public class AssertUtil {
     public static void notNull(Object obj, String message,Integer code) {
         if (obj == null) {
             log.info("obj is null...............");
-            throw new GmallException(message,code);
+            throw new GmallException(message);
         }
     }
 
@@ -63,7 +63,7 @@ public class AssertUtil {
     public static void isNull(Object object, String message,Integer code) {
         if (object != null) {
             log.info("obj is not null......");
-            throw new GmallException(message,code);
+            throw new GmallException(message);
         }
     }
 
@@ -93,7 +93,7 @@ public class AssertUtil {
     public static void isTrue(boolean expression, String message,Integer code) {
         if (!expression) {
 //            log.info("fail...............");
-            throw new GmallException(message,code);
+            throw new GmallException(message);
         }
     }
 
@@ -108,7 +108,7 @@ public class AssertUtil {
     public static void notEquals(Object m1, Object m2, String message,Integer code) {
         if (m1.equals(m2)) {
             log.info("equals...............");
-            throw new GmallException(message,code);
+            throw new GmallException(message);
         }
     }
 
@@ -136,7 +136,7 @@ public class AssertUtil {
      */
     public static void equals(Object m1, Object m2, String message,Integer code){
             log.info("not equals...............");
-            throw new GmallException(message,code);
+            throw new GmallException(message);
         }
 
 
@@ -165,7 +165,7 @@ public class AssertUtil {
     public static void notEmpty(String s,String message,Integer code){
         if (StringUtils.isEmpty(s)) {
             log.info("is empty...............");
-            throw new GmallException(message,code);
+            throw new GmallException(message);
         }
     }
 

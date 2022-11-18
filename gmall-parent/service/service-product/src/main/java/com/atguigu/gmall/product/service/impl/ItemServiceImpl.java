@@ -1,5 +1,6 @@
 package com.atguigu.gmall.product.service.impl;
 
+import com.atguigu.gmall.common.exception.GmallException;
 import com.atguigu.gmall.model.product.*;
 import com.atguigu.gmall.product.mapper.*;
 import com.atguigu.gmall.product.service.ItemService;
@@ -204,6 +205,56 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<BaseAttrInfo> getBaseAttrInfoBySkuId(Long skuId) {
         return baseAttrInfoMapper.selectBaseAttrInfoBySkuId(skuId);
+    }
+
+    /**
+     * @param decountMap
+     * @return void
+     * @Description 减少库存
+     * @Date 0:45 2022/11/10
+     * @Param [decountMap]
+     */
+    @Override
+    public void decountStock(Map<String, String> decountMap) {
+        decountMap.entrySet().stream().forEach(a->{
+            //获取商品扣减的数量
+            String value = a.getValue();
+            String key = a.getKey();
+            //获取商品的skuId
+            Integer skuId = Integer.valueOf(key);
+            Integer stock = Integer.valueOf(value);
+            //调用方法扣减库存
+            int i = skuInfoMapper.decountStock(stock, skuId);
+            if(i < 0){
+                throw new GmallException("扣减库存失败");
+            }
+
+            //扣除库存 java代码  查询 比较 更新 有时间差 高并发不安全  因此用sql语句 update 安全
+        });
+
+    }
+
+    /**
+     * @param map
+     * @return
+     * @Description 回滚库存
+     * @Date 18:15 2022/11/13
+     * @Param [map]
+     */
+    @Override
+    public void rollBackStock(Map<String, String> map) {
+        //遍历库存进行回滚
+        map.entrySet().stream().forEach(stock ->{
+            String key = stock.getKey();
+            String value = stock.getValue();
+            int backStock = skuInfoMapper.rollBackStock(Integer.parseInt(value),
+                    Integer.parseInt(key));
+            if(backStock < 0 ){
+                throw new GmallException("火棍库存失败");
+            }
+        });
+
+
 
     }
 }

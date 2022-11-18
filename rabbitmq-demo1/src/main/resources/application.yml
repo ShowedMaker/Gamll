@@ -1,0 +1,22 @@
+server:
+  port: 18082
+spring:
+  rabbitmq:
+    host: 192.168.200.128
+    port: 5672
+    username: java0509
+    password: java0509
+    virtual-host: /java0509
+    publisher-confirms: true
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+      direct:
+        prefetch: 10
+
+  redis:
+    host: 192.168.200.128
+    port: 6379
+
+

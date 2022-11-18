@@ -11,6 +11,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -22,6 +23,8 @@ import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,8 +93,30 @@ public class SearchServiceImpl implements SearchService {
             SearchHit next = iterator.next();
             //获取原始数据
             String sourceAsString = next.getSourceAsString();
+
             //反序列化
             Goods goods = JSONObject.parseObject(sourceAsString,Goods.class);
+
+
+            //进行高亮数据处理
+            Map<String, HighlightField> highlightFields = next.getHighlightFields();
+            if(highlightFields != null && !highlightFields.isEmpty()){
+                HighlightField highlightField = highlightFields.get("title");
+                if (highlightField != null) {
+                    Text[] fragments = highlightField.getFragments();
+                    if (fragments != null && fragments.length > 0) {
+
+                        String title = "";
+
+                        for (Text fragment : fragments) {
+                            title += fragment;
+                        }
+
+                        goods.setTitle(title);
+                    }
+
+                }
+            }
 
             goodsList.add(goods);
         }
@@ -290,12 +315,25 @@ public class SearchServiceImpl implements SearchService {
 
 
         //分页条件
-        Integer size = 100; //默认分100页  京东也这样
+        Integer size = 200; //默认分100页  京东也这样
         searchSourceBuilder.size(size);
 
         //获取当前页码
         Integer pageNum = getPageNum(searchData.get("pageNum"));
         searchSourceBuilder.from((pageNum-1)*size);
+
+
+        //超出最大限制
+        searchSourceBuilder.trackTotalHits(true);
+
+
+        //设置高亮属性
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("title");
+        highlightBuilder.preTags("<em style=color:red>");
+        highlightBuilder.postTags("</em>");
+        searchSourceBuilder.highlighter(highlightBuilder);
+
 
 
         //存储条件
@@ -331,7 +369,7 @@ public class SearchServiceImpl implements SearchService {
         try {
             //可以发生异常 如果用户输入非数字页码
             int i = Integer.parseInt(pageNum);
-            if( i <= 0 ){
+            if( i <= 0 || i > 100 ){
                 return 1;
             }else{
                 return i;

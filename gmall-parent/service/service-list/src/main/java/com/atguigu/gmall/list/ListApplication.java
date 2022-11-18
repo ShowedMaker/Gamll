@@ -20,8 +20,8 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @ComponentScan("com.atguigu.gmall")
 @EnableFeignClients(basePackages = {"com.atguigu.gmall.product.feign"})
 @EnableElasticsearchRepositories(basePackages = {"com.atguigu.gmall.list.dao"})
-public class GoodsApplication {
+public class ListApplication {
     public static void main(String[] args) {
-        SpringApplication.run(GoodsApplication.class,args);
+        SpringApplication.run(ListApplication.class,args);
     }
 }

@@ -1,10 +1,10 @@
 package com.atguigu.gmall.product.feign;
 
-import com.atguigu.gmall.common.result.Result;
 import com.atguigu.gmall.model.product.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -95,4 +95,22 @@ public interface ProductFeignClient {
     @GetMapping("/getSkuValuesList/{spuId}")
     public Map<Object, Object> getSkuValuesList(@PathVariable Long spuId);
 
+    /**
+     * @Description 扣除库存
+     * @Date 0:36 2022/11/10
+     * @Param [decountMap]
+     * @return void
+     */
+    @GetMapping("/decountStock")
+    public void decountStock(@RequestParam Map<String, String> decountMap);
+
+
+    /**
+     * @Description 回滚库存
+     * @Date 18:27 2022/11/13
+     * @Param [decountMap]
+     * @return void
+     */
+    @GetMapping("/rollBackStock")
+    public void rollBackStock(@RequestParam Map<String, String> rollBackMap);
 }

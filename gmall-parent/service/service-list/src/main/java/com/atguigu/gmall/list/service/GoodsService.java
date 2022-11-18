@@ -29,4 +29,15 @@ public interface GoodsService {
     public void goodsRemoveFromEs(Long goodsId);
 
 
+
+    /**
+     * @Description 热度值
+     * @Date 22:01 2022/11/5
+     * @Param [goodsId]
+     * @return void
+     */
+    public void addHotScore(Long goodsId);
+
+
+
 }

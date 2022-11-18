@@ -64,4 +64,21 @@ public class GoodsController {
         elasticsearchRestTemplate.putMapping(Goods.class); //解析Goods中的注解 拼成json 发给es执行 练习已手动拼过
         return Result.ok();
     }
+
+
+    /**
+     * @Description 增加热度值
+     * @Date 22:22 2022/11/5
+     * @Param [goodsId]
+     * @return com.atguigu.gmall.common.result.Result
+     */
+    @GetMapping("/addHotScore")
+    public Result addHotScore(Long goodsId){
+        goodsService.addHotScore(goodsId);
+        return Result.ok();
+    }
+
+
+
+
 }

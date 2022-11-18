@@ -12,6 +12,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -28,6 +34,7 @@ import java.util.List;
  */
 @Service
 @Transactional(rollbackFor = Exception.class) //不指定就是runtime级别
+@Log4j2
 public class ManageServiceImpl implements ManageService {
 
     @Resource
@@ -62,7 +69,10 @@ public class ManageServiceImpl implements ManageService {
     private SkuAttrValueMapper skuAttrValueMapper;
     @Resource
     private GoodsFeignClient goodsFeignClient;
-
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * @return java.util.List<com.atguigu.gmall.model.product.BaseCategory1>
@@ -432,11 +442,14 @@ public class ManageServiceImpl implements ManageService {
             throw new RuntimeException("上下架失败");
         }
 
+
         //将数据写入es 或者删掉  TODO  feign调用是一次成功或失败 (如果出现数据不一致，待mq优化，现在是强一致性，会失败)
         if(status.equals(ProductStatusConst.SKU_CANCEL_SALE)){
-            goodsFeignClient.goodsRemoveFromEs(skuId);
+            //下架
+            rabbitTemplate.convertAndSend("product_exchange1223","sku.down",skuId+"");
         }else{
-            goodsFeignClient.goodsFromDBToEs(skuId);
+            //上架
+            rabbitTemplate.convertAndSend("product_exchange123","sku.upper",skuId+"");
         }
     }
 
@@ -582,7 +595,7 @@ public class ManageServiceImpl implements ManageService {
             spuSaleAttrValue.setSaleAttrName(saleAttrName);
             int insert = spuSaleAttrValueMapper.insert(spuSaleAttrValue);
             if (insert <= 0) {
-                throw new GmallException("新增销售属性失败", 220);
+                throw new GmallException("新增销售属性失败");
             }
         });
 
@@ -594,7 +607,7 @@ public class ManageServiceImpl implements ManageService {
             spuImage.setSpuId(spuInfoId);
             int insert = spuImageMapper.insert(spuImage);
             if (insert <= 0) {
-                throw new GmallException("新增spu销售属性图片失败", 219);
+                throw new GmallException("新增spu销售属性图片失败");
             }
         });
     }

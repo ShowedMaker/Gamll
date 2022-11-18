@@ -90,4 +90,19 @@ public interface ItemService {
       */
      List<BaseAttrInfo> getBaseAttrInfoBySkuId(Long skuId);
 
+    /**
+     * @Description 减少库存
+     * @Date 0:46 2022/11/10
+     * @Param [decountMap]
+     * @return void
+     */
+     public void decountStock(Map<String,String> decountMap);
+
+     /**
+      * @Description 回滚库存
+      * @Date 18:15 2022/11/13
+      * @Param [map]
+      * @return
+      */
+     public void rollBackStock(Map<String,String> map);
 }

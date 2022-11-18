@@ -579,7 +579,8 @@
 						<li class="yui3-u-1-5" th:each="goods:${goodsList}">
 							<div class="list-wrap">
 								<div class="p-img">
-									<a href="item.html"  target="_blank"><img th:src="${goods.defaultImg}" /></a>
+									<a th:href="@{${itemUrl} + ${goods.id} + '.html'}"
+                                       target="_blank"><img th:src="${goods.defaultImg}" /></a>
 								</div>
 								<div class="price">
 									<strong>
@@ -588,7 +589,7 @@
 										</strong>
 								</div>
 								<div class="attr">
-									<a target="_blank" href="item.html" th:text="${goods.title}"></a>
+									<a target="_blank" th:href="@{${itemUrl} + ${goods.id} + '.html'}" th:utext="${goods.title}"></a>
 								</div>
 								<div class="commit">
                                     <i class="command">已有<span th:text="${goods.id}"></span>人评价</i>
@@ -604,30 +605,19 @@
 				<div class="fr page">
 					<div class="sui-pagination pagination-large">
 						<ul>
-							<li class="prev disabled">
-								<a href="#">«上一页</a>
+							<li th:class="${pageInfo.currentpage} == 1?'prev disabled':'prev'">
+								<a th:href="@{${url}(pageNum=${pageInfo.getUpper()})}">«上一页</a>
 							</li>
-							<li class="active">
-								<a href="#">1</a>
+							<li th:class="${pageInfo.currentpage} == ${i}?'active':''"
+                                th:each="i:${#numbers.sequence(pageInfo.lpage,pageInfo.rpage,1)}">
+								<a th:href="@{${url}(pageNum=${i})}" th:text="${i}" >1</a>
 							</li>
-							<li>
-								<a href="#">2</a>
-							</li>
-							<li>
-								<a href="#">3</a>
-							</li>
-							<li>
-								<a href="#">4</a>
-							</li>
-							<li>
-								<a href="#">5</a>
-							</li>
-							<li class="dotted"><span>...</span></li>
-							<li class="next">
-								<a href="#">下一页»</a>
+
+							<li th:class="${pageInfo.currentpage} == ${pageInfo.last}?'next disabled':'next'">
+                                <a th:href="@{${url}(pageNum=${pageInfo.getNext()})}">下一页»</a>
 							</li>
 						</ul>
-						<div><span>共10页&nbsp;</span><span></div>
+						<div>共<span th:text="${pageInfo.last}"></span>页&nbsp;</div>
 					</div>
 				</div>
 			</div>

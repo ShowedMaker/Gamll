@@ -4,10 +4,7 @@ import com.atguigu.gmall.common.cache.Java0500GmallCache;
 import com.atguigu.gmall.common.result.Result;
 import com.atguigu.gmall.model.product.*;
 import com.atguigu.gmall.product.service.ItemService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -126,4 +123,29 @@ public class ItemController {
         Map<Object, Object> skuValuesList = itemService.getSkuValuesList(spuId);
         return skuValuesList;
     }
+
+    /**
+     * @Description 扣减库存
+     * @Date 18:27 2022/11/13
+     * @Param [decountMap]
+     * @return void
+     */
+    @GetMapping("/decountStock")
+    public void decountStock(@RequestParam Map<String, String> decountMap){
+        itemService.decountStock(decountMap);
+    }
+
+
+    /**
+     * @Description 回滚库存
+     * @Date 18:27 2022/11/13
+     * @Param [decountMap]
+     * @return void
+     */
+    @GetMapping("/rollBackStock")
+    public void rollBackStock(@RequestParam Map<String, String> rollBackMap){
+        itemService.rollBackStock(rollBackMap);
+    }
+
+
 }
