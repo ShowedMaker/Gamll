@@ -8,6 +8,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
@@ -20,6 +21,7 @@ import javax.annotation.Resource;
  */
 @Log4j2
 @Configuration
+@Component
 public class SeckillOrderTimeOutListener {
 
     @Resource
@@ -41,6 +43,7 @@ public class SeckillOrderTimeOutListener {
         String username = new String(message.getBody());
         try {
             //取消超时订单
+//            System.out.println("=======");
             seckillOrderService.cancelSeckillOrder(username);
             //确认消息
             channel.basicAck(deliveryTag, false);

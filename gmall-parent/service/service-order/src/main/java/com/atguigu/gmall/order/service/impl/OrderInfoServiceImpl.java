@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * @Version V1.0
  */
 @Service
-public class  OrderInfoServiceImpl implements OrderInfoService {
+public class   OrderInfoServiceImpl implements OrderInfoService {
 
     @Autowired
     private CartFeignClient cartFeignClient;

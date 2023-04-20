@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
+
 /**
  * @ClassName SeckillOrderServiceImpl
  * @Description
@@ -66,7 +67,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         String username = "lipei";
         userRecode.setUsername(username);
 
-        //记录用户的排队次数 只放过第一个排队  清理key的情况：a.下单成功(不) b.取消订单(主动，超时) 清理 c.付钱 清理 d.下单失败 清理
+        //记录用户的排队次数 只放过第一个排队  清理key的情况：a.下单成功(不清理) b.取消订单(主动，超时) 清理 c.付钱 清理 d.下单失败 清理
         Long increment = redisTemplate.opsForValue().increment("User_Queue_Count_" + username, 1);
         if(increment > 1){
             userRecode.setStatus(3);
@@ -80,6 +81,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
 
         //将用户的排队状态记录到redis中去  与返回给用户 不冲突 可以异步 子线程去实现 最终会完成
         CompletableFuture.runAsync(()->{
+
             redisTemplate.opsForValue().set("User_Recode_" + username,userRecode);
 
             //排队成功和下单是两回事 异步 要保证相对公平(排队，薛峰 解耦) 用mq
@@ -87,6 +89,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             rabbitTemplate.convertAndSend("seckill_order_exchange",
                     "seckill.order.add",
                     JSONObject.toJSONString(userRecode));
+
 
         },threadPoolExecutor).whenCompleteAsync((a,b) ->{
              //出异常 假设是rabbitmq的一次异常 消息发不过去  不设计redis异常 redis要崩 上面就崩了
@@ -96,8 +99,9 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
                     如果做了rabbit的可靠性投递 就在 confirm和return中写这段逻辑
                  */
                 redisTemplate.delete("User_Queue_Count_" + username);
+
                 userRecode.setStatus(3);
-                userRecode.setMsg("秒杀失败！请重试！");
+                userRecode.setMsg("秒杀失败！请重试！" + a);
                 redisTemplate.opsForValue().set("User_Recode_" + username,userRecode);
             }
         });
@@ -135,14 +139,13 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         String time = userRecode.getTime();
         //获取商品ID
         String goodsId = userRecode.getGoodsId();
-        //获取数量
+        //获取数量 用户名
         Integer num = userRecode.getNum();
         String username = userRecode.getUsername();
 
 
         //判断时间段是否正确
         String nowTime = DateUtil.data2str(DateUtil.getDateMenus().get(0), DateUtil.PATTERN_YYYYMMDDHH);
-
         if (!nowTime.equals(time)) {
             //时间不对 秒杀商品的时间段还没开始 或者已经结束 秒杀失败
             //设置用户的排队信息
@@ -164,17 +167,16 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         if (seckillGoods == null) {
             //商品不在redis中存在了  买完了不从redis中拿掉   活动时间到了 拿掉
             userRecode.setStatus(3);
-            userRecode.setMsg("商品已经过期 秒杀失败！");
+            userRecode.setMsg("商品已经过期   秒杀失败！");
             //更新
             redisTemplate.opsForValue().set("User_Recode_" + username, userRecode);
             //清空锁  防止用户不能再下其他的订单
             redisTemplate.delete("User_Queue_Count_" + username);
-
             return;
         }
 
 
-//        //获取商品的限购
+        //获取商品的限购
         Integer seckillLimit = seckillGoods.getSeckillLimit();
         if (seckillLimit < num) {
             //超出限购
@@ -184,7 +186,6 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             redisTemplate.opsForValue().set("User_Recode_" + username, userRecode);
             //清空锁  防止用户不能再下其他的订单
             redisTemplate.delete("User_Queue_Count_" + username);
-
             return;
         }
 
@@ -205,6 +206,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
                 //库存不足
                 userRecode.setStatus(3);
                 userRecode.setMsg("商品库村不足，秒杀失败！");
+
                 //更新
                 redisTemplate.opsForValue().set("User_Recode_" + username, userRecode);
                 //清空锁  防止用户不能再下其他的订单
@@ -233,10 +235,16 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             return;
         }
 
+
+
         //想要精确 直接查这个key "Seckill_Goods_Increment_" + time 允许有点误差 下面set进去
         seckillGoods.setStockCount(increment.intValue());
-        //更新商品的库存
+        //更新商品的最新的库存
         redisTemplate.opsForHash().put(time,goodsId,seckillGoods);
+
+
+
+
 
         //生成秒杀订单 给用户看的  要写进redis中给他查  钱付完之后 改数据库 删redis
         SeckillOrder seckillOrder = new SeckillOrder();
@@ -265,11 +273,11 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
         //锁先不用删  现在没付款或取消订单 还不能买其他东西
         //发送延迟消息：5-10-15分钟 --TODO---
         rabbitTemplate.convertAndSend("seckill_order_normal_exchange",
-                                      "seckill.order.dead"
+                                      "seckill.order.normal"
                                       ,username //username存在排队状态 右面有全部内容
                                       ,message -> {
                     MessageProperties messageProperties = message.getMessageProperties();
-                    messageProperties.setExpiration("900000");
+                    messageProperties.setExpiration("20000");
                     return message;
                 });
 
@@ -374,15 +382,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             redisTemplate.opsForList().leftPushAll("Seckill_Goods_Stock_Queue_" + goodsId,ids);
 
         }
-
-
         //全部回滚完  结束
-
-
-
-
-
-
     }
 
 

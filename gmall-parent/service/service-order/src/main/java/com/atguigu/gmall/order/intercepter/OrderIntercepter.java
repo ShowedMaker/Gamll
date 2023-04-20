@@ -47,17 +47,6 @@ public class OrderIntercepter implements RequestInterceptor {
                 //存储到feign的http请求头中去
                 requestTemplate.header(everyHeaderName,header);
             }
-
         }
-
-
-
-
-
-
-
-
-
-
     }
 }

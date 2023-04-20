@@ -18,26 +18,18 @@ public class ReturnAndConfirmCallback implements RabbitTemplate.ConfirmCallback,
 
 
     /**
-     * @Description
+     * @Description 没有抵达交换机 触发
      * @Date 15:32 2022/11/10
      * @Param [correlationData, b, s]
      * @return void
      */
     @Override
     public void confirm(CorrelationData correlationData, boolean b, String s) {
-
-        /**
-         * @Description 没有抵达交换机 触发
-         * @Date 15:50 2022/11/10
-         * @Param [correlationData, b, s]
-         * @return void
-         */
         if(!b){
             System.out.println("为true, 值为：" + s);
             //记录日志
         }
     }
-
     
     /**
      * @Description 消息抵达交换机 不抵达队列触发

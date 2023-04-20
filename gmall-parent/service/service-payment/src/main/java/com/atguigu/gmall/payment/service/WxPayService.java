@@ -18,7 +18,7 @@ public interface WxPayService {
      * @Date 21:18 2022/11/13
      * @Param [orderId, money, desc]
      */
-    public Map<String, String> getPayCode(String orderId, String money, String desc);
+    public Map<String, String> getPayCode(Map<String,String> keyParams);
 
     /**
      * @Description 查询指定订单的支付结果

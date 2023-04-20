@@ -7,32 +7,39 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="thymeleaf-demo" />
-        <module name="common-util" />
         <module name="service-product-client" />
-        <module name="elasticsearch-demo" />
-        <module name="rabbitmq-demo" />
-        <module name="service-gateway" />
         <module name="service-item-client" />
         <module name="service-list" />
-        <module name="service-util" />
+        <module name="ThreadPool" />
         <module name="service-order" />
         <module name="rabbitmq-demo1" />
-        <module name="service-auth" />
-        <module name="web-all" />
-        <module name="service-product" />
         <module name="service-cart" />
         <module name="service-user" />
         <module name="service-list-client" />
         <module name="service-seckill" />
         <module name="model" />
-        <module name="service-cart-client" />
         <module name="service-item" />
         <module name="service-payment" />
+        <module name="common-util" />
+        <module name="elasticsearch-demo" />
+        <module name="rabbitmq-demo" />
+        <module name="service-gateway" />
+        <module name="sort" />
+        <module name="service-util" />
+        <module name="service-auth" />
+        <module name="web-all" />
+        <module name="service-product" />
+        <module name="JUC-Test" />
+        <module name="service-cart-client" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="JUC-Test" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ThreadPool" options="" />
       <module name="common" options="" />
       <module name="common-util" options="-parameters" />
       <module name="model" options="-parameters" />

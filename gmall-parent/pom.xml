@@ -18,6 +18,7 @@
         <module>service-gateway</module>
         <module>service-client</module>
         <module>web</module>
+        <module>ThreadPool</module>
     </modules>
 
 

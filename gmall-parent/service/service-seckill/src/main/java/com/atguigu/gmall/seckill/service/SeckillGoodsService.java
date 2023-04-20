@@ -29,7 +29,7 @@ public interface SeckillGoodsService {
      * @Param [time, orderId]
      * @return com.atguigu.gmall.model.activity.SeckillGoods
      */
-    public SeckillGoods getSeckillGoods(String time,String goodsId);
+    public SeckillGoods getSeckillGood(String time,String goodsId);
 
     /**
      * @Description 同步数据到数据库中去

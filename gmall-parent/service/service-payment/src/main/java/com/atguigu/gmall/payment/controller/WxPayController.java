@@ -4,6 +4,7 @@ import brave.http.HttpServerRequest;
 import com.alibaba.fastjson.JSONObject;
 import com.atguigu.gmall.payment.service.WxPayService;
 import com.github.wxpay.sdk.WXPayUtil;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,8 @@ public class WxPayController {
 
     @Autowired
     private WxPayService wxPayService;
-
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
     /**
      * @Description 获取微信支付二维码地址 给订单微服务调用
      * @Date 22:07 2022/11/13
@@ -38,10 +40,8 @@ public class WxPayController {
      * @return java.util.Map<java.lang.String,java.lang.String>
      */
     @GetMapping("/getPayCodeUrl")
-    public Map<String,String> getPayCodeUrl(@RequestParam String orderId, //map类型 浏览器请求可以不加   feign调用请求必须加@RequestParam 否则拿不到参数
-                                            @RequestParam String money,
-                                            @RequestParam String desc){
-        return wxPayService.getPayCode(orderId, money, desc);
+    public Map<String,String> getPayCodeUrl(@RequestParam Map<String,String> keyParams){
+        return wxPayService.getPayCode(keyParams);
     }
 
     /**
@@ -84,7 +84,13 @@ public class WxPayController {
             //反序列化
             System.out.println(JSONObject.toJSONString(map));
 
+
+            String attachJsonString = map.get("attach");
+            //反序列化
+            Map<String, String> attach = JSONObject.parseObject(attachJsonString,Map.class);
             //把这个支付结果告诉订单微服务  支付微服务没有权限去改订单系统 支付结果成功失败订单微服务自己决定后面做什么
+            rabbitTemplate.convertAndSend(attach.get("exchange"),attach.get("routeKey"),map);
+
 
 
 

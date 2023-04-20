@@ -1,5 +1,6 @@
 package com.atguigu.gmall.payment.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.atguigu.gmall.payment.constant.WxPayConstantUtils;
 import com.atguigu.gmall.payment.service.WxPayService;
 import com.atguigu.gmall.payment.util.HttpClient;
@@ -30,9 +31,11 @@ public class WxPayServiceImpl implements WxPayService {
      * @Param [orderId, money, desc]
      */
     @Override
-    public Map<String, String> getPayCode(String orderId, String money, String desc) {
+    public Map<String, String> getPayCode(Map<String,String> keyParams) {
         //参数校验  内部调用 可以调用之前校验
-        if(StringUtils.isEmpty(orderId) || StringUtils.isEmpty(money) || StringUtils.isEmpty(desc)){
+        if(StringUtils.isEmpty(keyParams.get("orderId"))
+        || StringUtils.isEmpty(keyParams.get("money"))
+        || StringUtils.isEmpty(keyParams.get("desc"))){
             return null;
         }
         try {
@@ -46,9 +49,9 @@ public class WxPayServiceImpl implements WxPayService {
             map.put("nonce_str",WXPayUtil.generateNonceStr());
 //        map 转为xml 同时 生成签名
 //        map.put("sign",WXPayUtil.generateSignedXml(map,partnerkey));
-            map.put("body",desc);
-            map.put("out_trade_no","java05091111" + orderId);
-            map.put("total_fee",money);
+            map.put("body",keyParams.get("desc"));
+            map.put("out_trade_no","java05091111" + keyParams.get("orderId"));
+            map.put("total_fee",keyParams.get("money"));
             map.put("spbill_create_ip","192.168.200.1");
             map.put("notify_url", WxPayConstantUtils.NOTIFY_URL);
             map.put("trade_type","NATIVE");
@@ -61,6 +64,17 @@ public class WxPayServiceImpl implements WxPayService {
 //                    && resultMap.get("result_code").equals("SUCCESS")){
 //                //返回微信给过来的二维码地址
 //                return resultMap;
+
+            //包装附加参数
+            Map<String,String> attach = new HashMap<>();
+            attach.put("exchange",keyParams.get("exchange"));
+            attach.put("routeKey",keyParams.get("routeKey"));
+            //若有用户名  保存一下 因为微信返回来的只有订单号  redis中 订单情况是和时间段相关的  不好查
+            if(!StringUtils.isEmpty(keyParams.get("username"))){
+                attach.put("routeKey",keyParams.get("username"));
+            }
+            map.put("attach", JSONObject.toJSONString(attach));
+
 
             //直接把结果返给订单微服务  至于成功还是失败 订单微服务自己判断
             return WXPayUtil.xmlToMap(contentXml);

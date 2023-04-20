@@ -41,6 +41,7 @@ public class SeckillOrderAddListener {
         try {
             //秒杀下单
             seckillOrderService.listenerAddSeckillOrder(s);
+            System.out.println("--==============================" + s);
             //确认消息
             channel.basicAck(deliveryTag, false);
         }catch (Exception e){

@@ -56,7 +56,7 @@ public class SeckillGoodsServiceImpl implements SeckillGoodsService {
      * @Param [time, orderId]
      */
     @Override
-    public SeckillGoods getSeckillGoods(String time, String goodsId) {
+    public SeckillGoods getSeckillGood(String time, String goodsId) {
         return (SeckillGoods) redisTemplate.opsForHash().get(time, goodsId);
     }
 

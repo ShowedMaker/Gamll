@@ -40,7 +40,7 @@ public class SeckillGoodsStockToDBListener {
         String time = new String(message.getBody());
         try {
             //同步数据到数据库中去
-            System.out.println(time);
+            System.out.println("=================================" + time+"============================");
             seckillGoodsService.updateSeckillGoodsStock(time);
             //确认消息
             channel.basicAck(deliveryTag, false);

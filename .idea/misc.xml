@@ -11,7 +11,15 @@
         <option value="$PROJECT_DIR$/gmall-parent/service/service-cart/pom.xml" />
         <option value="$PROJECT_DIR$/rabbitmq-demo/pom.xml" />
         <option value="$PROJECT_DIR$/rabbitmq-demo1/pom.xml" />
+        <option value="$PROJECT_DIR$/sort/pom.xml" />
+        <option value="$PROJECT_DIR$/ThreadPool/ThreadPool/pom.xml" />
+        <option value="$PROJECT_DIR$/ThreadPool/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/gmall-parent/ThreadPool/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8 (3)" project-jdk-type="JavaSDK">

@@ -29,7 +29,7 @@ public class SeckillGoodsController {
      * @Param []
      * @return com.atguigu.gmall.common.result.Result
      */
-    @GetMapping
+    @GetMapping("/getMenus")
     public Result getSeckillTimeMenu(){
         return Result.ok(DateUtil.getDateMenus());
     }
@@ -52,8 +52,8 @@ public class SeckillGoodsController {
      * @Param [time, goodsId]
      * @return com.atguigu.gmall.common.result.Result
      */
-    @GetMapping("/getSeckillGoods")
-    public Result getSeckillGoods(String time,String goodsId){
-        return Result.ok(seckillGoodsService.getSeckillGoods(time,goodsId));
+    @GetMapping("/getSeckillGood")
+    public Result getSeckillGood(String time,String goodsId){
+        return Result.ok(seckillGoodsService.getSeckillGood(time,goodsId));
     }
 }

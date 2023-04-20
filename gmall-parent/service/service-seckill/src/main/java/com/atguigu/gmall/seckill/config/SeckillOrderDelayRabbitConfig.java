@@ -35,7 +35,7 @@ public class SeckillOrderDelayRabbitConfig {
     public Queue seckillOrderDeadQueue(){
         return QueueBuilder.durable("seckill_order_dead_queue")
                 .withArgument("x-dead-letter-exchange","seckill_order_dead_exchange")
-                .withArgument("x-dead-letter-routing-key","seckill.order.normal")
+                .withArgument("x-dead-letter-routing-key","seckill.order.dead")
                 .build();
     }
 
@@ -48,7 +48,7 @@ public class SeckillOrderDelayRabbitConfig {
     @Bean
     public Binding seckillOrderDeadBinding(@Qualifier("seckillOrderNormalExchange") Exchange seckillOrderNormalExchange
                     ,@Qualifier("seckillOrderDeadQueue") Queue seckillOrderDeadQueue){
-        return BindingBuilder.bind(seckillOrderDeadQueue).to(seckillOrderNormalExchange).with("seckill.order.dead").noargs();
+        return BindingBuilder.bind(seckillOrderDeadQueue).to(seckillOrderNormalExchange).with("seckill.order.normal").noargs();
     }
 
 
@@ -86,7 +86,7 @@ public class SeckillOrderDelayRabbitConfig {
     public Binding seckillOrderNormalBinding(@Qualifier("seckillOrderDeadExchange") Exchange seckillOrderDeadExchange,
                                             @Qualifier("seckillOrderNormalQueue") Queue seckillOrderNormalQueue){
         return BindingBuilder.bind(seckillOrderNormalQueue).to(seckillOrderDeadExchange)
-                .with("seckill.order.normal").noargs();
+                .with("seckill.order.dead").noargs();
     }
 
 
